@@ -11,3 +11,5 @@ deploy/ConfluenceApp.txt
 deploy/ExternalApp.txt
 test/
 templates/
+
+src/.DS_Store

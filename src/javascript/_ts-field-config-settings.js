@@ -18,11 +18,11 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
     },
     notAllowedFields: [
             //User story fields
-            'ScheduleState','PortfolioItem','PredecessorsAndSuccessors',
+            'ScheduleState','PortfolioItem',
             //Portfolio Item fields
             'State','Children',
             //Common fields
-            'Parent','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
+            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
     ],
 
     fieldSubTpl: '<div id="{id}" class="settings-grid"></div>',
@@ -45,11 +45,15 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
             this.logger.log('saveFieldSettings', a, b)
 
             var form = this;
+            var order = 1;
             var newFieldList = _.map(this._store.data.items, function(record) {
+                //reorder the store
+                record.order = order++;
                 //Find the records in the field list
                 return _.find(form.fields, { 'name': record.get('fieldName')});
             });
             this.fields = newFieldList;
+            this._store.filter();   //Fire re-sort
         }
     },
 
@@ -68,10 +72,10 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
 
         _.each(this.fields, function(f){
             if (this._isFieldAllowed(f)){
-                var dsp = false,
+                var dsp = f.required || false,
                     def_value = f.defaultValue || '',
                     req = f.required || false,
-                    order = null;
+                    order = 9999999;
 
                 if (decodedValue[f.name]){
                     dsp = true;
@@ -84,14 +88,19 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         }, this);
 
         this._store = Ext.create('Ext.data.Store', {
-            fields: ['fieldName', 'displayName', 'display', 'defaultValue', 'defaultDisplayValue','required','order','fieldObj'],
+            fields: ['fieldName', 'displayName', 'display', 'defaultValue','required','order','fieldObj'],
             data: data,
+            sortOnFilter: true,
+            sortOnLoad: false,
+            sorters: [{
+                property: 'order',
+                value: 'ASC'
+            }],
             listeners: {
                 scope: this,
                 datachanged: this.saveFieldSettings
             }
         });
-        this._store.sort('order', 'ASC');
 
         this.logger.log('formConfigSetting', this._store);
         this._grid = Ext.create('Rally.ui.grid.Grid', {
@@ -200,7 +209,7 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
                     var val= '<i>Default Values not Supported</i>',
                         color = "gray";
                     if (me._isAllowedDefaultValue(r)) {
-                        val = r.get('defaultDisplayValue') || '';
+                        val = r.get('defaultValue') || '';
                         color = "black";
                     }
                     return Ext.String.format('<span style="display: inline; font-size: 11px; padding-left:50px;line-height:15px;color:{0};">{1}</span>',color,val);
@@ -260,14 +269,14 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         return data;
     },
     _buildSettingValue: function() {
-        var mappings = {},
-            order = 1;
+        var mappings = {};
+
         this._store.each(function(record) {
-            if (record.get('display') || record.get('required') || record.get('defaultValue')) {
+            if (record.get('display') || record.get('required') ) {
                 mappings[record.get('fieldName')] = {
                     required: record.get('required'),
                     defaultValue: record.get('defaultValue'),
-                    order: order++,
+                    order: record.get('order'),
                     display: record.get('display')
                 };
             }

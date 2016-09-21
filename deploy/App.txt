@@ -3,11 +3,11 @@
 <head>
     <title>Configurable Request Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Wed Sep 21 2016 11:25:41 GMT+0100 (BST) -->
+    <!--  Build Date: Wed Sep 21 2016 15:11:44 GMT+0100 (BST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Wed Sep 21 2016 11:25:41 GMT+0100 (BST)";
-        var CHECKSUM = 78564347162;
+        var APP_BUILD_DATE = "Wed Sep 21 2016 15:11:44 GMT+0100 (BST)";
+        var CHECKSUM = 79920822218;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1025,11 +1025,11 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
     },
     notAllowedFields: [
             //User story fields
-            'ScheduleState','PortfolioItem','PredecessorsAndSuccessors',
+            'ScheduleState','PortfolioItem',
             //Portfolio Item fields
             'State','Children',
             //Common fields
-            'Parent','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
+            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
     ],
 
     fieldSubTpl: '<div id="{id}" class="settings-grid"></div>',
@@ -1052,11 +1052,15 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
             this.logger.log('saveFieldSettings', a, b)
 
             var form = this;
+            var order = 1;
             var newFieldList = _.map(this._store.data.items, function(record) {
+                //reorder the store
+                record.order = order++;
                 //Find the records in the field list
                 return _.find(form.fields, { 'name': record.get('fieldName')});
             });
             this.fields = newFieldList;
+            this._store.filter();   //Fire re-sort
         }
     },
 
@@ -1075,10 +1079,10 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
 
         _.each(this.fields, function(f){
             if (this._isFieldAllowed(f)){
-                var dsp = false,
+                var dsp = f.required || false,
                     def_value = f.defaultValue || '',
                     req = f.required || false,
-                    order = null;
+                    order = 9999999;
 
                 if (decodedValue[f.name]){
                     dsp = true;
@@ -1091,14 +1095,19 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         }, this);
 
         this._store = Ext.create('Ext.data.Store', {
-            fields: ['fieldName', 'displayName', 'display', 'defaultValue', 'defaultDisplayValue','required','order','fieldObj'],
+            fields: ['fieldName', 'displayName', 'display', 'defaultValue','required','order','fieldObj'],
             data: data,
+            sortOnFilter: true,
+            sortOnLoad: false,
+            sorters: [{
+                property: 'order',
+                value: 'ASC'
+            }],
             listeners: {
                 scope: this,
                 datachanged: this.saveFieldSettings
             }
         });
-        this._store.sort('order', 'ASC');
 
         this.logger.log('formConfigSetting', this._store);
         this._grid = Ext.create('Rally.ui.grid.Grid', {
@@ -1207,7 +1216,7 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
                     var val= '<i>Default Values not Supported</i>',
                         color = "gray";
                     if (me._isAllowedDefaultValue(r)) {
-                        val = r.get('defaultDisplayValue') || '';
+                        val = r.get('defaultValue') || '';
                         color = "black";
                     }
                     return Ext.String.format('<span style="display: inline; font-size: 11px; padding-left:50px;line-height:15px;color:{0};">{1}</span>',color,val);
@@ -1267,14 +1276,14 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         return data;
     },
     _buildSettingValue: function() {
-        var mappings = {},
-            order = 1;
+        var mappings = {};
+
         this._store.each(function(record) {
-            if (record.get('display') || record.get('required') || record.get('defaultValue')) {
+            if (record.get('display') || record.get('required') ) {
                 mappings[record.get('fieldName')] = {
                     required: record.get('required'),
                     defaultValue: record.get('defaultValue'),
-                    order: order++,
+                    order: record.get('order'),
                     display: record.get('display')
                 };
             }
@@ -1420,6 +1429,11 @@ Ext.define('Rally.technicalservices.RequestForm', {
                 newFields[field_name]=field_obj.defaultValue;
             }
         },this);
+
+        //Add the users name in here
+    debugger;
+        newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
+
         this.logger.log('_getNewRecord', newFields);
         var rec = Ext.create(model, newFields);
         return rec;
@@ -1451,7 +1465,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
         if (this.down('#Attachments')){
             attachments = this.down('#Attachments').getValue() || null;
         }
-debugger;
+
         this.newRecord.save({
             scope: this,
             callback: function(result, operation) {
@@ -1775,12 +1789,13 @@ Ext.define("configurable-request-form", {
     },
     getColumnCfgs: function(){
 
-        var config_obj = this.formConfiguration;
-        if (!Ext.isObject(config_obj)){
+//        var config_obj = this.formConfiguration;
+//        if (!Ext.isObject(config_obj)){
             config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
-        }
+//        }
 
-        return [{
+        this.logger.log('gridColumnCfgObj', config_obj);
+        var clmns =  [{
             dataIndex: 'FormattedID',
             text: 'ID',
             renderer: function(item){
@@ -1788,6 +1803,8 @@ Ext.define("configurable-request-form", {
             }
         }].concat(Ext.Object.getKeys(config_obj));
 
+        this.logger.log('gridColumnCfgs', clmns);
+        return clmns;
     },
 
     _onNewRequest: function() {
@@ -1898,12 +1915,13 @@ Ext.define("configurable-request-form", {
 
     getInternalAppSettings: function() {
         this.logger.log('getInternalAppSettings', this.getSettings());
-        this.formConfiguration = Ext.JSON.decode(this.getSettings('formConfigurationSettings'));
+        this.formConfiguration = Ext.JSON.decode(this.formConfigurationSettings);
     },
 
     saveInternalAppSettings: function() {
         this.logger.log('saveInternalAppSettings', this.getSettings());
-            this.setSettings();
+        this.setSettings();
+//        this.formConfiguration = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
     }
 });
 

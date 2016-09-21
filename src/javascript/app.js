@@ -205,12 +205,13 @@ Ext.define("configurable-request-form", {
     },
     getColumnCfgs: function(){
 
-        var config_obj = this.formConfiguration;
-        if (!Ext.isObject(config_obj)){
+//        var config_obj = this.formConfiguration;
+//        if (!Ext.isObject(config_obj)){
             config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
-        }
+//        }
 
-        return [{
+        this.logger.log('gridColumnCfgObj', config_obj);
+        var clmns =  [{
             dataIndex: 'FormattedID',
             text: 'ID',
             renderer: function(item){
@@ -218,6 +219,8 @@ Ext.define("configurable-request-form", {
             }
         }].concat(Ext.Object.getKeys(config_obj));
 
+        this.logger.log('gridColumnCfgs', clmns);
+        return clmns;
     },
 
     _onNewRequest: function() {
@@ -328,11 +331,12 @@ Ext.define("configurable-request-form", {
 
     getInternalAppSettings: function() {
         this.logger.log('getInternalAppSettings', this.getSettings());
-        this.formConfiguration = Ext.JSON.decode(this.getSettings('formConfigurationSettings'));
+        this.formConfiguration = Ext.JSON.decode(this.formConfigurationSettings);
     },
 
     saveInternalAppSettings: function() {
         this.logger.log('saveInternalAppSettings', this.getSettings());
-            this.setSettings();
+        this.setSettings();
+//        this.formConfiguration = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
     }
 });

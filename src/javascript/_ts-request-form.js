@@ -102,6 +102,11 @@ Ext.define('Rally.technicalservices.RequestForm', {
                 newFields[field_name]=field_obj.defaultValue;
             }
         },this);
+
+        //Add the users name in here
+    debugger;
+        newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
+
         this.logger.log('_getNewRecord', newFields);
         var rec = Ext.create(model, newFields);
         return rec;
@@ -133,7 +138,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
         if (this.down('#Attachments')){
             attachments = this.down('#Attachments').getValue() || null;
         }
-debugger;
+
         this.newRecord.save({
             scope: this,
             callback: function(result, operation) {
