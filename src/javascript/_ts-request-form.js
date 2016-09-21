@@ -104,7 +104,6 @@ Ext.define('Rally.technicalservices.RequestForm', {
         },this);
 
         //Add the users name in here
-    debugger;
         newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
 
         this.logger.log('_getNewRecord', newFields);
