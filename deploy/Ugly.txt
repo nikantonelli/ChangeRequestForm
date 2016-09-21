@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configurable Request Form</title>
+    <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
+    <!--  Build Date: Fri Sep 16 2016 14:16:44 GMT+0100 (BST) -->
+    
+    <script type="text/javascript">
+        var APP_BUILD_DATE = "Fri Sep 16 2016 14:16:44 GMT+0100 (BST)";
+        var CHECKSUM = [%= checksum %];
+    </script>
+    
+    <script type="text/javascript" src="/apps/2.0/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function() {
+            
+            
+               Rally.launchApp('configurable-request-form', {
+                   name: 'Configurable Request Form'
+               });
+        });
+    </script>
+    
+    <style type="text/css">
+
+.app {
+}
+.x-action-col-icon {
+    float: left;
+}
+.tsinfolink {
+    position:absolute;
+    right:0px;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    text-align: center;
+    color: white;
+    background: #C0C0C0;
+    border-style: solid;
+    border-width: 1px;
+    margin-top: 25px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.tslabel {
+    font-family: ProximaNovaSemiBold,Helvetica,Arial;
+    color: #222;
+    font-size: 12px;
+    text-align: right;
+    float: right;
+    padding: 10;
+}
+
+.tsinvalid {
+    color: #c30;
+    font-weight: bold;
+    font-family: ProximaNovaSemiBold,Helvetica,Arial;
+}
+
+.tsinstructions {
+    font-family: ProximaNovaSemiBold,Helvetica,Arial;
+    color: #222;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.tstbl {
+    padding: 5px;
+}
+
+.tstbl tr:nth-child(odd){
+    background-color: #e6e6e6;
+}
+.tstbl tr:nth-child(even){
+    background-color: #ffffff;
+}
+    </style>
+
+</head>
+<body></body>
+</html>
