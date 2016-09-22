@@ -17,7 +17,8 @@ Ext.define('Rally.technicalservices.RequestForm', {
         instructions: 'These are instructions for filling out this form',
         model: undefined,
         formConfiguration: undefined,
-        thankYouMessage: "Thank you for your submission."
+        thankYouMessage: "Thank you for your submission.",
+        submitDirectory: ''
     },
 
     /**
@@ -27,7 +28,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
 
     constructor: function(config){
         this.mergeConfig(config);
-        this.logger.log('constructor', config, this.config);
+        //this.logger.log('constructor', config, this.config);
         this.callParent(arguments);
     },
     initComponent: function () {
@@ -37,7 +38,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
     },
 
     _build: function (model) {
-        this.logger.log('_build', model);
+        //this.logger.log('_build', model);
         this.newRecord = this._getNewRecord(model);
 
         this._addInstructions(this.instructions);
@@ -54,7 +55,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
 
     _addFields: function(newRecord){
         var model = this.model;
-        this.logger.log('_addFields', this.formConfiguration);
+        //this.logger.log('_addFields', this.formConfiguration);
         if (!_.isEmpty(this.formConfiguration)){
             _.each(this.formConfiguration, function(field_obj, field_name){
                 var model_field = model.getField(field_name);
@@ -91,13 +92,13 @@ Ext.define('Rally.technicalservices.RequestForm', {
         }
     },
     _resize: function(cmp){
-        this.logger.log('_resize');
+        //this.logger.log('_resize');
         this.doLayout();
     },
     _getNewRecord: function(model){
         var newFields = {};
         Ext.Object.each(this.formConfiguration, function(field_name, field_obj){
-            this.logger.log('_getNewRecord',field_name, field_obj);
+            //this.logger.log('_getNewRecord',field_name, field_obj);
             if (field_obj.defaultValue){
                 newFields[field_name]=field_obj.defaultValue;
             }
@@ -106,7 +107,10 @@ Ext.define('Rally.technicalservices.RequestForm', {
         //Add the users name in here
         newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
 
-        this.logger.log('_getNewRecord', newFields);
+        //Add submit directory here
+        newFields['Project'] = this.submitDirectory
+
+        //this.logger.log('_getNewRecord', newFields);
         var rec = Ext.create(model, newFields);
         return rec;
     },
@@ -116,7 +120,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
             valid = true;
         _.each(this.formConfiguration, function(field_obj, field_name){
             if (!Ext.Array.contains(exceptionFields, field_name) && field_obj.display) {
-                this.logger.log('_updateNewRecord', field_name, this.down('#' + field_name));
+                //this.logger.log('_updateNewRecord', field_name, this.down('#' + field_name));
 
                 var val = this.down('#' + field_name).getValue() || field_obj.defaultValue || null;
                 valid = this.down('#' + field_name).validate();
@@ -127,6 +131,11 @@ Ext.define('Rally.technicalservices.RequestForm', {
 
             }
         }, this);
+
+        if (this.newRecord.get('Ready') && this.submitDirectory){
+            this.newRecord.set('Project', this.submitDirectory);
+        }
+//this.logger.log('newRecordsetTo', this.newRecord);
         return valid;
     },
     save: function () {
@@ -164,7 +173,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
         });
     },
     _updateAttachments: function(record, field_name, val){
-        this.logger.log('_updateAttachments', record, field_name, val);
+        //this.logger.log('_updateAttachments', record, field_name, val);
         var deferred = Ext.create('Deft.Deferred');
         var me = this;
 
@@ -190,7 +199,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
         var deferred = Ext.create('Deft.Deferred'),
             me = this;
 
-        this.logger.log('_updateAttachment', val);
+        //this.logger.log('_updateAttachment', val);
 
         Rally.data.ModelFactory.getModel({
             type: 'AttachmentContent',

@@ -6,7 +6,9 @@ Ext.define("configurable-request-form", {
     config: {
         defaultSettings: {
             formConfigurationSettings: {},
-            formInstructions: ''
+            formInstructions: '',
+            approvalField: false,
+            submitDirectory: ''
         }
     },
     formModel: undefined,
@@ -30,7 +32,7 @@ Ext.define("configurable-request-form", {
         }
     },
     _prepareApp: function(){
-        this.logger.log('_prepareApp', this.formModelName, this.formInstructions, this.formConfigurationSettings);
+        //this.logger.log('_prepareApp', this.formModelName, this.formInstructions, this.formConfigurationSettings);
         Rally.technicalservices.WsapiToolbox.fetchModel(this.formModelName).then({
             scope: this,
             success: function(model){
@@ -43,7 +45,7 @@ Ext.define("configurable-request-form", {
         });
     },
     _validateSettings: function(model){
-        this.logger.log('_validateSettings');
+        //this.logger.log('_validateSettings');
         var config_obj = this.formConfiguration;
         if (!Ext.isObject(config_obj)){
             var formSettings = this.getSetting('formConfigurationSettings');
@@ -52,7 +54,7 @@ Ext.define("configurable-request-form", {
             }
         }
 
-        this.logger.log('_validateSettings formFieldConfig', config_obj);
+        //this.logger.log('_validateSettings formFieldConfig', config_obj);
         if (_.isEmpty(config_obj)){
             this.add({
                 xtype: 'container',
@@ -70,7 +72,7 @@ Ext.define("configurable-request-form", {
         }
     },
     _buildForm: function(model, form_config){
-        this.logger.log('_buildForm');
+        //this.logger.log('_buildForm');
 
         this._clearWindow();
 
@@ -83,6 +85,7 @@ Ext.define("configurable-request-form", {
             model: model,
             instructions: this.formInstructions,
             formConfiguration: form_config,
+            submitDirectory: this.submitDirectory,  //If ready is set, push the record to here
             listeners: {
                 scope: this,
                 save: this._onSaved,
@@ -120,7 +123,7 @@ Ext.define("configurable-request-form", {
         requestForm.save();
     },
     _onSaved: function(newRecord){
-        this.logger.log('_onSaved',newRecord);
+        //this.logger.log('_onSaved',newRecord);
         Rally.ui.notify.Notifier.showCreate({artifact: newRecord});
         this._showGrid(this.model);
     },
@@ -134,7 +137,7 @@ Ext.define("configurable-request-form", {
         Rally.ui.notify.Notifier.showError(obj);
     },
     _onReady: function(form){
-        this.logger.log('_onReady', form);
+        //this.logger.log('_onReady', form);
 
         form.doLayout();
         form.setWidth('95%')
@@ -155,6 +158,17 @@ Ext.define("configurable-request-form", {
             this.down('#new_button').destroy();
         }
     },
+
+    _checkSubmit: function(store,record,action,field) {
+        //Don't need:  && (record.get('Ready') !== record.raw.Ready)
+        if (field.includes('Ready') && (action === 'edit') && (record.raw.Ready === false)) {
+            if ( this.submitDirectory ) {
+                record.set('Project', this.submitDirectory);
+                this.fireEvent('update');
+            }
+        } 
+    },
+
     _showGrid: function(model) {
         this._clearWindow();
         var btn = Ext.create('Ext.Container', {
@@ -191,13 +205,19 @@ Ext.define("configurable-request-form", {
                     property: 'CreationDate',
                     direction: 'DESC'
                 }
-            ]
+            ],
+
+            //When data changes, check ready flag to see if it needs moving to submitDirectory
+            listeners: {
+                update: this._checkSubmit,
+                scope: this
+            }
         }, this);
 
         ds.load().then({
             scope: this,
             failure: function(a,b,c,d,e){
-                this.logger.log('Could not load datastore');
+                //this.logger.log('Could not load datastore');
             },
             success: function(){
                 var gb = this.add({
@@ -230,27 +250,32 @@ Ext.define("configurable-request-form", {
             }
         }
 
-        this.logger.log('gridColumnCfgObj', fieldList);
+        //this.logger.log('gridColumnCfgObj', fieldList);
         var clmns =  [{
             dataIndex: 'FormattedID',
             text: 'ID',
             renderer: function(item){
                 return item;
             }
-        },{
-            dataIndex: 'Project',
-            text: 'Approval Stage',
-            renderer: function(item){
-                return item._refObjectName;
-            }
-        }].concat(Ext.Object.getKeys(fieldList));
+        }];
 
-        this.logger.log('gridColumnCfgs', clmns);
+        if ( this.getSetting('approvalField')) {
+            clmns.push({
+                dataIndex: 'Project',
+                text: 'Approval Stage',
+                renderer: function(item){
+                    return item._refObjectName;
+                }
+            });
+        }
+        clmns = clmns.concat(Ext.Object.getKeys(fieldList));
+
+        //this.logger.log('gridColumnCfgs', clmns);
         return clmns;
     },
 
     _onNewRequest: function() {
-        this.logger.log('_onNewRequest');
+        //this.logger.log('_onNewRequest');
         this._buildForm(this.model, this.formConfiguration)
     },
 
@@ -293,7 +318,7 @@ Ext.define("configurable-request-form", {
         var configJSON = this.getSetting('formConfigurationSettings');
 
         if ( !_.isEmpty(configJSON)) {
-            this.logger.log('found settings', configJSON);
+            //this.logger.log('found settings', configJSON);
             fields = Ext.JSON.decode( configJSON );
         } else {
             if (formModel){
@@ -309,11 +334,11 @@ Ext.define("configurable-request-form", {
                         fields[f.name] = { displayName: f.displayName, fieldName: f.name, display: dsp, defaultValue: def_value, required: req, order: order++};
                     }
                 }, this);
-            this.logger.log('loaded new settings', fields);
+            //this.logger.log('loaded new settings', fields);
             }
         }
 
-        return [{
+        var returned = [{
             name: 'formInstructions',
             xtype: 'textareafield',
             fieldLabel: 'Form Instructions',
@@ -329,7 +354,21 @@ Ext.define("configurable-request-form", {
             margin: 15,
             labelAlign: 'top',
             fields: fields
+        },
+        {
+            name: 'approvalField',
+            xtype: 'rallycheckboxfield',
+            fieldLabel: 'Show project node as approval stage',
+            labelAlign: 'top'
+        },
+        {
+            name: 'submitDirectory',
+            xtype: 'rallyprojectpicker',
+            labelAlign: 'top',
+            fieldLabel: 'Target submit node'
         }];
+
+        return returned;
     },
     _launchInfo: function() {
         if ( this.about_dialog ) { this.about_dialog.destroy(); }
@@ -341,7 +380,7 @@ Ext.define("configurable-request-form", {
 
     //onSettingsUpdate:  Override
     onSettingsUpdate: function (settings){
-        this.logger.log('onSettingsUpdate',settings);
+        //this.logger.log('onSettingsUpdate',settings);
         Ext.apply(this, settings);
 
         if (this.isExternal()){
@@ -360,13 +399,13 @@ Ext.define("configurable-request-form", {
             prefs[pref_key] = val;
         });
 
-        this.logger.log('SaveExternalAppSettings', key, settings, prefs);
+        //this.logger.log('SaveExternalAppSettings', key, settings, prefs);
         Rally.data.PreferenceManager.update({
             project: this.getContext().getProject()._ref,
             settings: prefs,
             scope: this,
             success: function(updatedRecords, notUpdatedRecords) {
-                this.logger.log('settings saved', key, updatedRecords, notUpdatedRecords);
+                //this.logger.log('settings saved', key, updatedRecords, notUpdatedRecords);
             }
         });
     },
@@ -381,7 +420,7 @@ Ext.define("configurable-request-form", {
             scope: this,
             cache: false,
             success: function(prefs) {
-                this.logger.log('settings loaded', key, prefs);
+                //this.logger.log('settings loaded', key, prefs);
                 _.each(prefs, function(val, pref_name){
                     if (/\.formInstructions$/.test(pref_name)){
                         this.formInstructions = val;
@@ -399,12 +438,12 @@ Ext.define("configurable-request-form", {
     },
 
     getInternalAppSettings: function() {
-        this.logger.log('getInternalAppSettings', this.getSettings());
+        //this.logger.log('getInternalAppSettings', this.getSettings());
         this.formConfiguration = Ext.JSON.decode(this.formConfigurationSettings);
     },
 
     saveInternalAppSettings: function() {
-        this.logger.log('saveInternalAppSettings', this.getSettings());
+        //this.logger.log('saveInternalAppSettings', this.getSettings());
         this.setSettings();
 //        this.formConfiguration = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
     }
