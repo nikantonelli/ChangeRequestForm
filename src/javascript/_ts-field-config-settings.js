@@ -16,14 +16,14 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         fields: undefined,
         decodedValue: {}
     },
-    notAllowedFields: [
-            //User story fields
-            'ScheduleState','PortfolioItem',
-            //Portfolio Item fields
-            'State','Children',
-            //Common fields
-            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
-    ],
+//    notAllowedFields: [
+//            //User story fields
+//            'ScheduleState','PortfolioItem',
+//            //Portfolio Item fields
+//            'State','Children',
+//            //Common fields
+//            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
+//    ],
 
     fieldSubTpl: '<div id="{id}" class="settings-grid"></div>',
     noDefaultValue: ['Attachments'],
@@ -39,25 +39,32 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         this.callParent(arguments);
     },
 
-    saveFieldSettings: function(a, b) {
-
-        if (this.hasOwnProperty('_store')) {
-            this.logger.log('saveFieldSettings', a, b)
-
-            var form = this;
-            var order = 1;
-            var newFieldList = _.map(this._store.data.items, function(record) {
-                //reorder the store
-                record.order = order++;
-                //Find the records in the field list
-                return _.find(form.fields, { 'name': record.get('fieldName')});
-            });
-            this.fields = newFieldList;
-            this._store.filter();   //Fire re-sort
-        }
-    },
+//    saveFieldSettings: function(a, b) {
+//
+//        if (this.hasOwnProperty('_store')) {
+//            this.logger.log('saveFieldSettings', this.value, this._store.data.items)
+//
+//            var form = this;
+//            var order = 1;
+//            var newFieldList = _.map(this._store.data.items, function(record) {
+//                //reorder the store
+//                record.order = order++;
+//                //Find the records in the field list
+//                return _.find(form.fields, { 'name': record.get('fieldName')});
+//            });
+//            this.config.fields = newFieldList;
+//            this.fields = newFieldList;
+//            this.logger.log('saveFieldSettings out', this.fields);
+//
+//
+//            this._store.filter();   //Fire re-sort
+//        }
+//    },
 
     onRender: function() {
+
+    this.logger.log('onRender in', this.value);
+
         var decodedValue = {};
         if (this.value && !_.isEmpty(this.value)){
             decodedValue = Ext.JSON.decode(this.value);
@@ -66,40 +73,22 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
 
         var data = [];
         var formData = [];
-        var listOrder = 0;
-
-
+//        var listOrder = 0;
 
         _.each(this.fields, function(f){
-            if (this._isFieldAllowed(f)){
-                var dsp = f.required || false,
-                    def_value = f.defaultValue || '',
-                    req = f.required || false,
-                    order = 9999999;
-
-                if (decodedValue[f.name]){
-                    dsp = true;
-                    def_value = decodedValue[f.name].defaultValue;
-                    req = decodedValue[f.name].required;
-                    order = listOrder++;
-                }
-                data.push({fieldName: f.name, displayName: f.displayName, display: dsp, defaultValue: def_value, required: req, fieldObj: f, order: order});
-            }
+                data.push({order: f.order, fieldName: f.fieldName, displayName: f.displayName, display: f.display, defaultValue: f.defaultValue, required: f.required });
         }, this);
 
         this._store = Ext.create('Ext.data.Store', {
-            fields: ['fieldName', 'displayName', 'display', 'defaultValue','required','order','fieldObj'],
+//            fields: ['fieldName', 'displayName', 'display', 'defaultValue','required','order','fieldObj'],
+            fields: ['order', 'fieldName', 'displayName', 'display', 'defaultValue','required','fieldObj'],
             data: data,
-            sortOnFilter: true,
-            sortOnLoad: false,
+            sortOnFilter: false,
+            sortOnLoad: true,
             sorters: [{
                 property: 'order',
                 value: 'ASC'
-            }],
-            listeners: {
-                scope: this,
-                datachanged: this.saveFieldSettings
-            }
+            }]
         });
 
         this.logger.log('formConfigSetting', this._store);
@@ -119,34 +108,38 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
                 plugins: {
                     ptype: 'gridviewdragdrop',
                     dragText: 'Drag and drop to reorder'
-                }
+                },
+//            listeners: {
+//                scope: this,
+//                drop: this.saveFieldSettings
+//            }
             }
         });
       //  this.fireEvent('ready');
     },
 
-    _isFieldAllowed: function(field){
-        var forbiddenTypes = ['WEB_LINK'];
-
-        if (Ext.Array.contains(this.notAllowedFields, field.name)){
-            return false;
-        }
-
-        if (field.readOnly === true || field.hidden === true){
-            return false;
-        }
-
-        if (field && !field.attributeDefinition){
-            return false;
-        }
-
-        //Not showing Weblinks for now
-        if (Ext.Array.contains(forbiddenTypes, field.attributeDefinition.AttributeType)){
-            return false;
-        }
-
-        return true;
-    },
+//    _isFieldAllowed: function(field){
+//        var forbiddenTypes = ['WEB_LINK'];
+//
+//        if (Ext.Array.contains(this.notAllowedFields, field.name)){
+//            return false;
+//        }
+//
+//        if (field.readOnly === true || field.hidden === true){
+//            return false;
+//        }
+//
+//        if (field && !field.attributeDefinition){
+//            return false;
+//        }
+//
+//        //Not showing Weblinks for now
+//        if (Ext.Array.contains(forbiddenTypes, field.attributeDefinition.AttributeType)){
+//            return false;
+//        }
+//
+//        return true;
+//    },
     _getColumnCfgs: function() {
         var me = this;
 
@@ -265,22 +258,26 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
      */
     getSubmitData: function() {
         var data = {};
+
         data[this.name] = Ext.JSON.encode(this._buildSettingValue());
+    this.logger.log('getSubmitData out', data);
         return data;
     },
     _buildSettingValue: function() {
         var mappings = {};
 
+        var order = 0;
         this._store.each(function(record) {
-            if (record.get('display') || record.get('required') ) {
                 mappings[record.get('fieldName')] = {
-                    required: record.get('required'),
+                    display: record.get('display'),
+                    displayName: record.get('displayName'),
+                    fieldName: record.get('fieldName'),
                     defaultValue: record.get('defaultValue'),
-                    order: record.get('order'),
-                    display: record.get('display')
+                    required: record.get('required'),
+                    order: order++
                 };
-            }
         }, this);
+        this.logger.log('_buildSettingValue out', mappings);
         return mappings;
     },
 

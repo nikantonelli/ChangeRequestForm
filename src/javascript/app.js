@@ -12,6 +12,15 @@ Ext.define("configurable-request-form", {
     formModel: undefined,
     formModelName: 'PortfolioItem/Feature',
     items: [],
+    notAllowedFields: [
+            //User story fields
+            'ScheduleState','PortfolioItem',
+            //Portfolio Item fields
+            'State','Children',
+            //Common fields
+            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
+    ],
+
     externalAppSettingsKey: 'technicalServicesConfigurableFormAppSettings',
     launch: function() {
         if (this.isExternal()){
@@ -37,7 +46,10 @@ Ext.define("configurable-request-form", {
         this.logger.log('_validateSettings');
         var config_obj = this.formConfiguration;
         if (!Ext.isObject(config_obj)){
-            config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
+            var formSettings = this.getSetting('formConfigurationSettings');
+            if (!Ext.isObject(formSettings)){
+                config_obj = Ext.JSON.decode(formSettings);
+            }
         }
 
         this.logger.log('_validateSettings formFieldConfig', config_obj);
@@ -210,14 +222,28 @@ Ext.define("configurable-request-form", {
             config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
 //        }
 
-        this.logger.log('gridColumnCfgObj', config_obj);
+        // I am sure there are better ways to do this, but it works....
+        var fieldList = {};
+        for ( key in config_obj) {
+            if (config_obj[key].display) {
+                fieldList[key] = config_obj[key];
+            }
+        }
+
+        this.logger.log('gridColumnCfgObj', fieldList);
         var clmns =  [{
             dataIndex: 'FormattedID',
             text: 'ID',
             renderer: function(item){
                 return item;
             }
-        }].concat(Ext.Object.getKeys(config_obj));
+        },{
+            dataIndex: 'Project',
+            text: 'Approval Stage',
+            renderer: function(item){
+                return item._refObjectName;
+            }
+        }].concat(Ext.Object.getKeys(fieldList));
 
         this.logger.log('gridColumnCfgs', clmns);
         return clmns;
@@ -237,11 +263,54 @@ Ext.define("configurable-request-form", {
             }
         ];
     },
+
+    _isFieldAllowed: function(field){
+        var forbiddenTypes = ['WEB_LINK'];
+
+        if (Ext.Array.contains(this.notAllowedFields, field.name)){
+            return false;
+        }
+
+        if (field.readOnly === true || field.hidden === true){
+            return false;
+        }
+
+        if (field && !field.attributeDefinition){
+            return false;
+        }
+
+        //Not showing Weblinks for now
+        if (Ext.Array.contains(forbiddenTypes, field.attributeDefinition.AttributeType)){
+            return false;
+        }
+
+        return true;
+    },
+
     getSettingsFields: function() {
         var formModel = this.formModel;
-        var fields = [];
-        if (formModel){
-            fields = formModel.getFields();
+        var fields = {};
+        var configJSON = this.getSetting('formConfigurationSettings');
+
+        if ( !_.isEmpty(configJSON)) {
+            this.logger.log('found settings', configJSON);
+            fields = Ext.JSON.decode( configJSON );
+        } else {
+            if (formModel){
+                modelFields = formModel.getFields();
+                var order = 1;
+
+                _.each(modelFields, function(f){
+                    if (this._isFieldAllowed(f)){
+                        var dsp = f.required || false,
+                            def_value = f.defaultValue || '',
+                            req = f.required || false;
+
+                        fields[f.name] = { displayName: f.displayName, fieldName: f.name, display: dsp, defaultValue: def_value, required: req, order: order++};
+                    }
+                }, this);
+            this.logger.log('loaded new settings', fields);
+            }
         }
 
         return [{
@@ -256,7 +325,7 @@ Ext.define("configurable-request-form", {
         },{
             name: 'formConfigurationSettings',
             xtype: 'tsformconfigsettings',
-            fieldLabel: 'Form Field Configuration - Drag rows to specify order on the form',
+            fieldLabel: 'Drag rows to specify order on the form. Remember to "leave" the field for it to store!',
             margin: 15,
             labelAlign: 'top',
             fields: fields

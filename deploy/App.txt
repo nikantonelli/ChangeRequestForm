@@ -3,11 +3,11 @@
 <head>
     <title>Configurable Request Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Wed Sep 21 2016 15:11:44 GMT+0100 (BST) -->
+    <!--  Build Date: Thu Sep 22 2016 13:25:47 GMT+0100 (BST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Wed Sep 21 2016 15:11:44 GMT+0100 (BST)";
-        var CHECKSUM = 79920822218;
+        var APP_BUILD_DATE = "Thu Sep 22 2016 13:25:47 GMT+0100 (BST)";
+        var CHECKSUM = 86388115924;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1023,14 +1023,14 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         fields: undefined,
         decodedValue: {}
     },
-    notAllowedFields: [
-            //User story fields
-            'ScheduleState','PortfolioItem',
-            //Portfolio Item fields
-            'State','Children',
-            //Common fields
-            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
-    ],
+//    notAllowedFields: [
+//            //User story fields
+//            'ScheduleState','PortfolioItem',
+//            //Portfolio Item fields
+//            'State','Children',
+//            //Common fields
+//            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
+//    ],
 
     fieldSubTpl: '<div id="{id}" class="settings-grid"></div>',
     noDefaultValue: ['Attachments'],
@@ -1046,25 +1046,32 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
         this.callParent(arguments);
     },
 
-    saveFieldSettings: function(a, b) {
-
-        if (this.hasOwnProperty('_store')) {
-            this.logger.log('saveFieldSettings', a, b)
-
-            var form = this;
-            var order = 1;
-            var newFieldList = _.map(this._store.data.items, function(record) {
-                //reorder the store
-                record.order = order++;
-                //Find the records in the field list
-                return _.find(form.fields, { 'name': record.get('fieldName')});
-            });
-            this.fields = newFieldList;
-            this._store.filter();   //Fire re-sort
-        }
-    },
+//    saveFieldSettings: function(a, b) {
+//
+//        if (this.hasOwnProperty('_store')) {
+//            this.logger.log('saveFieldSettings', this.value, this._store.data.items)
+//
+//            var form = this;
+//            var order = 1;
+//            var newFieldList = _.map(this._store.data.items, function(record) {
+//                //reorder the store
+//                record.order = order++;
+//                //Find the records in the field list
+//                return _.find(form.fields, { 'name': record.get('fieldName')});
+//            });
+//            this.config.fields = newFieldList;
+//            this.fields = newFieldList;
+//            this.logger.log('saveFieldSettings out', this.fields);
+//
+//
+//            this._store.filter();   //Fire re-sort
+//        }
+//    },
 
     onRender: function() {
+
+    this.logger.log('onRender in', this.value);
+
         var decodedValue = {};
         if (this.value && !_.isEmpty(this.value)){
             decodedValue = Ext.JSON.decode(this.value);
@@ -1073,40 +1080,22 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
 
         var data = [];
         var formData = [];
-        var listOrder = 0;
-
-
+//        var listOrder = 0;
 
         _.each(this.fields, function(f){
-            if (this._isFieldAllowed(f)){
-                var dsp = f.required || false,
-                    def_value = f.defaultValue || '',
-                    req = f.required || false,
-                    order = 9999999;
-
-                if (decodedValue[f.name]){
-                    dsp = true;
-                    def_value = decodedValue[f.name].defaultValue;
-                    req = decodedValue[f.name].required;
-                    order = listOrder++;
-                }
-                data.push({fieldName: f.name, displayName: f.displayName, display: dsp, defaultValue: def_value, required: req, fieldObj: f, order: order});
-            }
+                data.push({order: f.order, fieldName: f.fieldName, displayName: f.displayName, display: f.display, defaultValue: f.defaultValue, required: f.required });
         }, this);
 
         this._store = Ext.create('Ext.data.Store', {
-            fields: ['fieldName', 'displayName', 'display', 'defaultValue','required','order','fieldObj'],
+//            fields: ['fieldName', 'displayName', 'display', 'defaultValue','required','order','fieldObj'],
+            fields: ['order', 'fieldName', 'displayName', 'display', 'defaultValue','required','fieldObj'],
             data: data,
-            sortOnFilter: true,
-            sortOnLoad: false,
+            sortOnFilter: false,
+            sortOnLoad: true,
             sorters: [{
                 property: 'order',
                 value: 'ASC'
-            }],
-            listeners: {
-                scope: this,
-                datachanged: this.saveFieldSettings
-            }
+            }]
         });
 
         this.logger.log('formConfigSetting', this._store);
@@ -1126,34 +1115,38 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
                 plugins: {
                     ptype: 'gridviewdragdrop',
                     dragText: 'Drag and drop to reorder'
-                }
+                },
+//            listeners: {
+//                scope: this,
+//                drop: this.saveFieldSettings
+//            }
             }
         });
       //  this.fireEvent('ready');
     },
 
-    _isFieldAllowed: function(field){
-        var forbiddenTypes = ['WEB_LINK'];
-
-        if (Ext.Array.contains(this.notAllowedFields, field.name)){
-            return false;
-        }
-
-        if (field.readOnly === true || field.hidden === true){
-            return false;
-        }
-
-        if (field && !field.attributeDefinition){
-            return false;
-        }
-
-        //Not showing Weblinks for now
-        if (Ext.Array.contains(forbiddenTypes, field.attributeDefinition.AttributeType)){
-            return false;
-        }
-
-        return true;
-    },
+//    _isFieldAllowed: function(field){
+//        var forbiddenTypes = ['WEB_LINK'];
+//
+//        if (Ext.Array.contains(this.notAllowedFields, field.name)){
+//            return false;
+//        }
+//
+//        if (field.readOnly === true || field.hidden === true){
+//            return false;
+//        }
+//
+//        if (field && !field.attributeDefinition){
+//            return false;
+//        }
+//
+//        //Not showing Weblinks for now
+//        if (Ext.Array.contains(forbiddenTypes, field.attributeDefinition.AttributeType)){
+//            return false;
+//        }
+//
+//        return true;
+//    },
     _getColumnCfgs: function() {
         var me = this;
 
@@ -1272,22 +1265,26 @@ Ext.define('Rally.technicalservices.settings.FormConfiguration',{
      */
     getSubmitData: function() {
         var data = {};
+
         data[this.name] = Ext.JSON.encode(this._buildSettingValue());
+    this.logger.log('getSubmitData out', data);
         return data;
     },
     _buildSettingValue: function() {
         var mappings = {};
 
+        var order = 0;
         this._store.each(function(record) {
-            if (record.get('display') || record.get('required') ) {
                 mappings[record.get('fieldName')] = {
-                    required: record.get('required'),
+                    display: record.get('display'),
+                    displayName: record.get('displayName'),
+                    fieldName: record.get('fieldName'),
                     defaultValue: record.get('defaultValue'),
-                    order: record.get('order'),
-                    display: record.get('display')
+                    required: record.get('required'),
+                    order: order++
                 };
-            }
         }, this);
+        this.logger.log('_buildSettingValue out', mappings);
         return mappings;
     },
 
@@ -1431,7 +1428,6 @@ Ext.define('Rally.technicalservices.RequestForm', {
         },this);
 
         //Add the users name in here
-    debugger;
         newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
 
         this.logger.log('_getNewRecord', newFields);
@@ -1596,6 +1592,15 @@ Ext.define("configurable-request-form", {
     formModel: undefined,
     formModelName: 'PortfolioItem/Feature',
     items: [],
+    notAllowedFields: [
+            //User story fields
+            'ScheduleState','PortfolioItem',
+            //Portfolio Item fields
+            'State','Children',
+            //Common fields
+            'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
+    ],
+
     externalAppSettingsKey: 'technicalServicesConfigurableFormAppSettings',
     launch: function() {
         if (this.isExternal()){
@@ -1621,7 +1626,10 @@ Ext.define("configurable-request-form", {
         this.logger.log('_validateSettings');
         var config_obj = this.formConfiguration;
         if (!Ext.isObject(config_obj)){
-            config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
+            var formSettings = this.getSetting('formConfigurationSettings');
+            if (!Ext.isObject(formSettings)){
+                config_obj = Ext.JSON.decode(formSettings);
+            }
         }
 
         this.logger.log('_validateSettings formFieldConfig', config_obj);
@@ -1794,14 +1802,28 @@ Ext.define("configurable-request-form", {
             config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
 //        }
 
-        this.logger.log('gridColumnCfgObj', config_obj);
+        // I am sure there are better ways to do this, but it works....
+        var fieldList = {};
+        for ( key in config_obj) {
+            if (config_obj[key].display) {
+                fieldList[key] = config_obj[key];
+            }
+        }
+
+        this.logger.log('gridColumnCfgObj', fieldList);
         var clmns =  [{
             dataIndex: 'FormattedID',
             text: 'ID',
             renderer: function(item){
                 return item;
             }
-        }].concat(Ext.Object.getKeys(config_obj));
+        },{
+            dataIndex: 'Project',
+            text: 'Approval Stage',
+            renderer: function(item){
+                return item._refObjectName;
+            }
+        }].concat(Ext.Object.getKeys(fieldList));
 
         this.logger.log('gridColumnCfgs', clmns);
         return clmns;
@@ -1821,11 +1843,54 @@ Ext.define("configurable-request-form", {
             }
         ];
     },
+
+    _isFieldAllowed: function(field){
+        var forbiddenTypes = ['WEB_LINK'];
+
+        if (Ext.Array.contains(this.notAllowedFields, field.name)){
+            return false;
+        }
+
+        if (field.readOnly === true || field.hidden === true){
+            return false;
+        }
+
+        if (field && !field.attributeDefinition){
+            return false;
+        }
+
+        //Not showing Weblinks for now
+        if (Ext.Array.contains(forbiddenTypes, field.attributeDefinition.AttributeType)){
+            return false;
+        }
+
+        return true;
+    },
+
     getSettingsFields: function() {
         var formModel = this.formModel;
-        var fields = [];
-        if (formModel){
-            fields = formModel.getFields();
+        var fields = {};
+        var configJSON = this.getSetting('formConfigurationSettings');
+
+        if ( !_.isEmpty(configJSON)) {
+            this.logger.log('found settings', configJSON);
+            fields = Ext.JSON.decode( configJSON );
+        } else {
+            if (formModel){
+                modelFields = formModel.getFields();
+                var order = 1;
+
+                _.each(modelFields, function(f){
+                    if (this._isFieldAllowed(f)){
+                        var dsp = f.required || false,
+                            def_value = f.defaultValue || '',
+                            req = f.required || false;
+
+                        fields[f.name] = { displayName: f.displayName, fieldName: f.name, display: dsp, defaultValue: def_value, required: req, order: order++};
+                    }
+                }, this);
+            this.logger.log('loaded new settings', fields);
+            }
         }
 
         return [{
