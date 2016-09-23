@@ -1,69 +1,24 @@
-#Configurable Request Form
+#Change Request Form
 
-## Development Notes
+To make it easier for non-technical users to submit Change Requests to a centralised team.
 
-### First Load
+This app will provide a list of the users requests and allow them to enter new ones using a 
+predefined form layout. Usually the user does not need to see or be able to modify all the
+fields that are held for an artifact, so the App Settings allow the project admin to set up
+a set of fields to view and edit.
 
-If you've just downloaded this from github and you want to do development, 
-you're going to need to have these installed:
+The app controls the created artifact in two ways:
 
- * node.js
- * grunt-cli
- * grunt-init
- 
-Since you're getting this from github, we assume you have the command line
-version of git also installed.  If not, go get git.
-
-If you have those three installed, just type this in the root directory here
-to get set up to develop:
-
-  npm install
-
-### Structure
-
-  * src/javascript:  All the JS files saved here will be compiled into the 
-  target html file
-  * src/style: All of the stylesheets saved here will be compiled into the 
-  target html file
-  * test/fast: Fast jasmine tests go here.  There should also be a helper 
-  file that is loaded first for creating mocks and doing other shortcuts
-  (fastHelper.js) **Tests should be in a file named <something>-spec.js**
-  * test/slow: Slow jasmine tests go here.  There should also be a helper
-  file that is loaded first for creating mocks and doing other shortcuts 
-  (slowHelper.js) **Tests should be in a file named <something>-spec.js**
-  * templates: This is where templates that are used to create the production
-  and debug html files live.  The advantage of using these templates is that
-  you can configure the behavior of the html around the JS.
-  * config.json: This file contains the configuration settings necessary to
-  create the debug and production html files.  Server is only used for debug,
-  name, className and sdk are used for both.
-  * package.json: This file lists the dependencies for grunt
-  * auth.json: This file should NOT be checked in.  Create this to run the
-  slow test specs.  It should look like:
-    {
-        "username":"you@company.com",
-        "password":"secret"
-    }
-  
-### Usage of the grunt file
-####Tasks
-    
-##### grunt debug
-
-Use grunt debug to create the debug html file.  You only need to run this when you have added new files to
-the src directories.
-
-##### grunt build
-
-Use grunt build to create the production html file.  We still have to copy the html file to a panel to test.
-
-##### grunt test-fast
-
-Use grunt test-fast to run the Jasmine tests in the fast directory.  Typically, the tests in the fast 
-directory are more pure unit tests and do not need to connect to Rally.
-
-##### grunt test-slow
-
-Use grunt test-slow to run the Jasmine tests in the slow directory.  Typically, the tests in the slow
-directory are more like integration tests in that they require connecting to Rally and interacting with
-data.
+1. It leaves in in the current project node until moved by the intended recipient. The 
+   advantage of this is that you can create a sub node to the current node that the recipient 
+   also has read/write access, but general users have read only. In this way the user can still 
+   see all the artefacts, but now ownership/control is passed to the recipient
+   
+2. It moves it to a target directory that could be somewhere completely different. This would 
+   make it appear as if the change request had 'disappeared' into someone elses inbox
+   
+Using the project hierarchy in a clever way could result in the user being able to see the stage
+of deliberation of the request. For example, if you make sub-nodes called "Under Consideration", 
+"Accepted" and "Rejected", the user could get feedback as to what the recipient is doing with 
+the request. At the same time, the artefact could have it's usual "State" field or a custom field 
+defining another workflow that the recipient uses, but doesn't want visible to the user
