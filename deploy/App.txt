@@ -3,11 +3,11 @@
 <head>
     <title>Configurable Request Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Sep 22 2016 20:36:45 GMT+0100 (BST) -->
+    <!--  Build Date: Fri Sep 23 2016 16:03:05 GMT+0100 (BST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Sep 22 2016 20:36:45 GMT+0100 (BST)";
-        var CHECKSUM = 87792889068;
+        var APP_BUILD_DATE = "Fri Sep 23 2016 16:03:05 GMT+0100 (BST)";
+        var CHECKSUM = 87755706493;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1720,13 +1720,10 @@ Ext.define("configurable-request-form", {
     _checkSubmit: function(store,record,action,field) {
         //Don't need:  && (record.get('Ready') !== record.raw.Ready)
         if (field.includes('Ready') && (action === 'edit') && (record.raw.Ready === false)) {
-        debugger;
             if ( this.submitDirectory ) {
                 record.set('Project', this.submitDirectory);
                 this.fireEvent('update');
             }
-        } else {
-        debugger;
         }
     },
 
@@ -1924,9 +1921,9 @@ Ext.define("configurable-request-form", {
         },
         {
             name: 'submitDirectory',
-            xtype: 'rallyprojectpicker',
+            xtype: 'rallyprojectscopefield',
             labelAlign: 'top',
-            fieldLabel: 'Target submit node'
+            fieldLabel: 'Target "submit on ready" project'
         }];
 
         return returned;

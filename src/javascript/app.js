@@ -166,7 +166,7 @@ Ext.define("configurable-request-form", {
                 record.set('Project', this.submitDirectory);
                 this.fireEvent('update');
             }
-        } 
+        }
     },
 
     _showGrid: function(model) {
@@ -363,9 +363,9 @@ Ext.define("configurable-request-form", {
         },
         {
             name: 'submitDirectory',
-            xtype: 'rallyprojectpicker',
+            xtype: 'rallyprojectscopefield',
             labelAlign: 'top',
-            fieldLabel: 'Target submit node'
+            fieldLabel: 'Target "submit on ready" project'
         }];
 
         return returned;
