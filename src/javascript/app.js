@@ -8,6 +8,7 @@ Ext.define("configurable-request-form", {
             formConfigurationSettings: {},
             formInstructions: '',
             approvalField: false,
+            enableFormattedID: false,
             submitDirectory: ''
         }
     },
@@ -251,14 +252,22 @@ Ext.define("configurable-request-form", {
         }
 
         //this.logger.log('gridColumnCfgObj', fieldList);
-        var clmns =  [{
-            dataIndex: 'FormattedID',
-            text: 'ID',
-            renderer: function(item){
-                return item;
-            }
-        }];
 
+        var clmns = [];
+
+        if ( this.getSetting('enableFormattedID')) {
+            clmns = ['FormattedID']
+        }
+        else {
+
+            clmns =  [{
+                dataIndex: 'FormattedID',
+                text: 'ID',
+                renderer: function(item){
+                    return item;
+                }
+            }];
+        }
         if ( this.getSetting('approvalField')) {
             clmns.push({
                 dataIndex: 'Project',
@@ -354,6 +363,12 @@ Ext.define("configurable-request-form", {
             margin: 15,
             labelAlign: 'top',
             fields: fields
+        },
+        {
+            name: 'enableFormattedID',
+            xtype: 'rallycheckboxfield',
+            fieldLabel: 'Show ID as hyperlink',
+            labelAlign: 'top'
         },
         {
             name: 'approvalField',
