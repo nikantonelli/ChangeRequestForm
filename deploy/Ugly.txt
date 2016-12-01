@@ -3,14 +3,14 @@
 <head>
     <title>Configurable Request Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Fri Sep 16 2016 14:16:44 GMT+0100 (BST) -->
+    <!--  Build Date: Thu Dec 01 2016 14:11:46 GMT+0000 (GMT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Fri Sep 16 2016 14:16:44 GMT+0100 (BST)";
+        var APP_BUILD_DATE = "Thu Dec 01 2016 14:11:46 GMT+0000 (GMT)";
         var CHECKSUM = [%= checksum %];
     </script>
     
-    <script type="text/javascript" src="/apps/2.0/sdk.js"></script>
+    <script type="text/javascript" src="/apps/2.1/sdk.js"></script>
 
     <script type="text/javascript">
         Rally.onReady(function() {

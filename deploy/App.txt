@@ -3,11 +3,11 @@
 <head>
     <title>Configurable Request Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Wed Oct 19 2016 11:46:42 GMT+0100 (BST) -->
+    <!--  Build Date: Thu Dec 01 2016 14:11:46 GMT+0000 (GMT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Wed Oct 19 2016 11:46:42 GMT+0100 (BST)";
-        var CHECKSUM = 88585009415;
+        var APP_BUILD_DATE = "Thu Dec 01 2016 14:11:46 GMT+0000 (GMT)";
+        var CHECKSUM = 89441475993;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1582,7 +1582,7 @@ Ext.define("configurable-request-form", {
             'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
     ],
 
-    externalAppSettingsKey: 'technicalServicesConfigurableFormAppSettings',
+    externalAppSettingsKey: 'niksAppSettings',
     launch: function() {
         if (this.isExternal()){
             this.getExternalAppSettings(this.externalAppSettingsKey);
@@ -1796,10 +1796,12 @@ Ext.define("configurable-request-form", {
     },
     getColumnCfgs: function(){
 
-//        var config_obj = this.formConfiguration;
-//        if (!Ext.isObject(config_obj)){
+        if (this.isExternal()) {
+			config_obj = Ext.JSON.decode(this.formConfigurationSettings);
+        }
+        else {
             config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
-//        }
+        }
 
         // I am sure there are better ways to do this, but it works....
         var fieldList = {};
@@ -1882,7 +1884,14 @@ Ext.define("configurable-request-form", {
     getSettingsFields: function() {
         var formModel = this.formModel;
         var fields = {};
-        var configJSON = this.getSetting('formConfigurationSettings');
+        var configJSON = {};
+
+        if (this.isExternal()){
+			configJSON = this.formConfigurationSettings;
+        }
+        else {
+            configJSON = this.getSetting('formConfigurationSettings');
+        }
 
         if ( !_.isEmpty(configJSON)) {
             //this.logger.log('found settings', configJSON);
@@ -1958,6 +1967,7 @@ Ext.define("configurable-request-form", {
 
         if (this.isExternal()){
             this.saveExternalAppSettings(this.externalAppSettingsKey, settings);
+            this.formConfiguration = Ext.JSON.decode(settings.formConfigurationSettings);
         } else {
             this.saveInternalAppSettings();
         }
@@ -2000,11 +2010,12 @@ Ext.define("configurable-request-form", {
                     }
                     if (/\.formConfigurationSettings$/.test(pref_name)){
                         if (val && !_.isEmpty(val)){
-                            this.formConfigurationSettings = Ext.JSON.decode(val);
+                            this.formConfigurationSettings = val;
                         }
                     }
                 }, this);
 
+                this.formConfiguration = Ext.JSON.decode(this.formConfigurationSettings);
                 this._prepareApp();
             }
         });

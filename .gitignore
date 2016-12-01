@@ -13,3 +13,5 @@ test/
 templates/
 
 src/.DS_Store
+
+deploy/App_works.txt

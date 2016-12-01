@@ -24,7 +24,7 @@ Ext.define("configurable-request-form", {
             'Parent','PredecessorsAndSuccessors','Predecessors','Successors','Project','Milestones','Workspace','Tags','Changesets','DisplayColor'
     ],
 
-    externalAppSettingsKey: 'technicalServicesConfigurableFormAppSettings',
+    externalAppSettingsKey: 'niksAppSettings',
     launch: function() {
         if (this.isExternal()){
             this.getExternalAppSettings(this.externalAppSettingsKey);
@@ -238,10 +238,12 @@ Ext.define("configurable-request-form", {
     },
     getColumnCfgs: function(){
 
-//        var config_obj = this.formConfiguration;
-//        if (!Ext.isObject(config_obj)){
+        if (this.isExternal()) {
+			config_obj = Ext.JSON.decode(this.formConfigurationSettings);
+        }
+        else {
             config_obj = Ext.JSON.decode(this.getSetting('formConfigurationSettings'));
-//        }
+        }
 
         // I am sure there are better ways to do this, but it works....
         var fieldList = {};
@@ -324,7 +326,14 @@ Ext.define("configurable-request-form", {
     getSettingsFields: function() {
         var formModel = this.formModel;
         var fields = {};
-        var configJSON = this.getSetting('formConfigurationSettings');
+        var configJSON = {};
+
+        if (this.isExternal()){
+			configJSON = this.formConfigurationSettings;
+        }
+        else {
+            configJSON = this.getSetting('formConfigurationSettings');
+        }
 
         if ( !_.isEmpty(configJSON)) {
             //this.logger.log('found settings', configJSON);
@@ -400,6 +409,7 @@ Ext.define("configurable-request-form", {
 
         if (this.isExternal()){
             this.saveExternalAppSettings(this.externalAppSettingsKey, settings);
+            this.formConfiguration = Ext.JSON.decode(settings.formConfigurationSettings);
         } else {
             this.saveInternalAppSettings();
         }
@@ -442,11 +452,12 @@ Ext.define("configurable-request-form", {
                     }
                     if (/\.formConfigurationSettings$/.test(pref_name)){
                         if (val && !_.isEmpty(val)){
-                            this.formConfigurationSettings = Ext.JSON.decode(val);
+                            this.formConfigurationSettings = val;
                         }
                     }
                 }, this);
 
+                this.formConfiguration = Ext.JSON.decode(this.formConfigurationSettings);
                 this._prepareApp();
             }
         });
