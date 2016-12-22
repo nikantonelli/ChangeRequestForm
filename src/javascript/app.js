@@ -168,7 +168,7 @@ Ext.define("assumption-request-form", {
                     itemId: 'new_button',
                     items: [{
                         xtype: 'rallybutton',
-                        text: 'New Request',
+                        text: 'New Assumption',
                         margin: 5,
                         bubbleEvents: ['click']
                     }]
