@@ -50,3 +50,11 @@
 .tstbl tr:nth-child(even){
     background-color: #ffffff;
 }
+.applink {
+    font-family: NotoSansBold,Helvetica,Arial;
+    color: #337ec6;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: normal;
+    text-align: left;
+}

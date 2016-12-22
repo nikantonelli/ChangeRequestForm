@@ -8,13 +8,13 @@ Ext.define("assumption-request-form", {
             formConfiguration: '{"fields" : [' +
 //                '{ "Name" : "Project",    "view" : true,  "edit" : false },' +
                 '{ "Name" : "Name",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "Description",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "Description",    "view" : false,  "edit" : true },' +
                 '{ "Name" : "c_RAIDOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_BusinessOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateDue",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateofNextReview",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "State",    "view" : false,  "edit" : true }' +
+                '{ "Name" : "Ready",    "view" : false,  "edit" : true }' +
                 ']}',
             approvalField: false,
             enableFormattedID: false,
@@ -61,8 +61,8 @@ Ext.define("assumption-request-form", {
 
         this._clearWindow();
 
-        this.add({xtype:'container',itemId:'display_box', flex: 1});
         this.add({xtype:'container',itemId:'button_box', flex: 1, layout: {type: 'hbox', pack: 'center'}});
+        this.add({xtype:'container',itemId:'display_box', flex: 1});
 
         this.down('#display_box').add({
             xtype: 'tsrequestform',
@@ -80,9 +80,16 @@ Ext.define("assumption-request-form", {
                 ready: this._onReady
             }
         });
+
+        var btnText = 'Submit';
+
+        if (record !== undefined) {
+            btntext = 'Update';
+        }
+
         this.down('#button_box').add({
             xtype:'rallybutton',
-            text: 'Submit',
+            text: btnText,
             itemId: 'btn-submit',
             style: {
                 textAlign: 'center'

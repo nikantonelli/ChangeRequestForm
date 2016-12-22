@@ -3,11 +3,11 @@
 <head>
     <title>Assumption Submit Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Dec 22 2016 14:11:11 GMT+0000 (GMT) -->
+    <!--  Build Date: Thu Dec 22 2016 14:20:51 GMT+0000 (GMT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Dec 22 2016 14:11:11 GMT+0000 (GMT)";
-        var CHECKSUM = 83552925541;
+        var APP_BUILD_DATE = "Thu Dec 22 2016 14:20:51 GMT+0000 (GMT)";
+        var CHECKSUM = 83711943283;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1576,7 +1576,8 @@ Ext.define("assumption-request-form", {
                 '{ "Name" : "c_BusinessOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateDue",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateofNextReview",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true }' +
+                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "State",    "view" : false,  "edit" : true }' +
                 ']}',
             approvalField: false,
             enableFormattedID: false,
