@@ -15,18 +15,19 @@ Ext.define("risk-request-form", {
                 '{ "Name" : "c_RAIDArea",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDEscalationDate",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDEscalationLevel",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "Description",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "Description",    "view" : false,  "edit" : true },' +
                 '{ "Name" : "c_RAIDImpactofRiskMaterialising",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDAreaofPrimaryImpact",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDImpactLevel",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDRiskProbabilityLevel",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDRiskResponseStrategy",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "c_RAIDActionstoResolve",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "c_RAIDActionstoResolve",    "view" : false,  "edit" : true },' +
                 '{ "Name" : "c_RAIDOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_BusinessOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateDue",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateofNextReview",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true }' +
+                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "Ready",    "view" : false,  "edit" : true }' +
                 ']}',
             approvalField: false,
             enableFormattedID: false,
@@ -73,8 +74,8 @@ Ext.define("risk-request-form", {
 
         this._clearWindow();
 
-        this.add({xtype:'container',itemId:'display_box', flex: 1});
         this.add({xtype:'container',itemId:'button_box', flex: 1, layout: {type: 'hbox', pack: 'center'}});
+        this.add({xtype:'container',itemId:'display_box', flex: 1});
 
         this.down('#display_box').add({
             xtype: 'tsrequestform',
@@ -92,9 +93,15 @@ Ext.define("risk-request-form", {
                 ready: this._onReady
             }
         });
+
+        var btnText = 'Submit';
+
+        if (record !== undefined) {
+            btnText = 'Update';
+        }
         this.down('#button_box').add({
             xtype:'rallybutton',
-            text: 'Submit',
+            text: btnText,
             itemId: 'btn-submit',
             style: {
                 textAlign: 'center'
@@ -244,7 +251,18 @@ Ext.define("risk-request-form", {
         var fieldList = [];
         for ( key in config_obj.fields) {
             if (config_obj.fields[key].view) {
-                fieldList.push(config_obj.fields[key].Name);
+//                if (config_obj.fields[key].Name === 'Parent' ) {
+//                    fieldList.push(
+//                        {
+//                            dataIndex: 'Parent',
+//                            text: 'Parent',
+//                            renderer: Rally.ui.renderer.RendererFactory.getRenderTemplate(this.model.getField('Parent'))
+//                        }
+//                    );
+//                }
+//                else {
+                    fieldList.push(config_obj.fields[key].Name);
+//                }
             }
         }
 
