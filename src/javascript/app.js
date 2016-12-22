@@ -13,7 +13,8 @@ Ext.define("assumption-request-form", {
                 '{ "Name" : "c_BusinessOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateDue",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateofNextReview",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true }' +
+                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "State",    "view" : false,  "edit" : true }' +
                 ']}',
             approvalField: false,
             enableFormattedID: false,
