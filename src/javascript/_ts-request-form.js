@@ -17,7 +17,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
         instructions: 'These are instructions for filling out this form',
         model: undefined,
         formConfiguration: undefined,
-        thankYouMessage: "Thank you for your submission.",
+        record: undefined,
         submitDirectory: ''
     },
 
@@ -34,16 +34,19 @@ Ext.define('Rally.technicalservices.RequestForm', {
     initComponent: function () {
         this.callParent();
         this.addEvents('save','ready','onwarning','onerror');
-        this._build(this.model);
+        this._build(this.model, this. record);
     },
 
-    _build: function (model) {
+    _build: function (model, record) {
         //this.logger.log('_build', model);
-        this.newRecord = this._getNewRecord(model);
+
+        if ( record === undefined) {
+            this.record = this._getNewRecord(model);
+        }
 
         this._addInstructions(this.instructions);
 
-        this._addFields(this.newRecord);
+        this._addFields(this.record);
 
     },
     _addInstructions: function(){
@@ -53,18 +56,19 @@ Ext.define('Rally.technicalservices.RequestForm', {
         title.update(this);
     },
 
-    _addFields: function(newRecord){
+    _addFields: function(record){
         var model = this.model;
         //this.logger.log('_addFields', this.formConfiguration);
         if (!_.isEmpty(this.formConfiguration)){
-            _.each(this.formConfiguration, function(field_obj, field_name){
+            _.each(this.formConfiguration, function(field_obj){
+                var field_name = field_obj.Name;
                 var model_field = model.getField(field_name);
-                if (model_field && field_obj.display){
+                if (model_field && field_obj.edit){
                     var item_id = field_name,
                         margin = 10,
                         field_label = model_field.displayName;
 
-                    var item = Rally.technicalservices.DetailEditorFactory.getEditor(model_field,newRecord,item_id, margin, field_label);
+                    var item = Rally.technicalservices.DetailEditorFactory.getEditor(model_field,record,item_id, margin, field_label);
                     item.labelCls = "tslabel";
                     if (field_obj.required){
                         item.validator = function(value) {
@@ -115,11 +119,12 @@ Ext.define('Rally.technicalservices.RequestForm', {
         return rec;
     },
 
-    _updateNewRecord: function(){
+    _updateRecord: function(){
         var exceptionFields = ["Attachments"],
             valid = true;
-        _.each(this.formConfiguration, function(field_obj, field_name){
-            if (!Ext.Array.contains(exceptionFields, field_name) && field_obj.display) {
+        _.each(this.formConfiguration, function(field_obj){
+            var field_name = field_obj.Name;
+            if (!Ext.Array.contains(exceptionFields, field_name) && field_obj.edit) {
                 //this.logger.log('_updateNewRecord', field_name, this.down('#' + field_name));
 
                 var val = this.down('#' + field_name).getValue() || field_obj.defaultValue || null;
@@ -127,19 +132,19 @@ Ext.define('Rally.technicalservices.RequestForm', {
                 if (!valid) {
                     return false;
                 }
-                this.newRecord.set(field_name, val);
+                this.record.set(field_name, val);
 
             }
         }, this);
 
-        if (this.newRecord.get('Ready') && this.submitDirectory){
-            this.newRecord.set('Project', this.submitDirectory);
+        if (this.record.get('Ready') && this.submitDirectory){
+            this.record.set('Project', this.submitDirectory);
         }
 //this.logger.log('newRecordsetTo', this.newRecord);
         return valid;
     },
     save: function () {
-        if (!this._updateNewRecord()){
+        if (!this._updateRecord()){
             return false;
         };
         var attachments = null;
@@ -147,7 +152,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
             attachments = this.down('#Attachments').getValue() || null;
         }
 
-        this.newRecord.save({
+        this.record.save({
             scope: this,
             callback: function(result, operation) {
                 if(operation.wasSuccessful()) {
