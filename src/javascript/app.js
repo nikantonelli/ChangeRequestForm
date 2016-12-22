@@ -15,7 +15,7 @@ Ext.define("issue-request-form", {
                 '{ "Name" : "c_RAIDArea",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDEscalationDate",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDEscalationLevel",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "Description",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "Description",    "view" : false,  "edit" : true },' +
                 '{ "Name" : "c_RAIDImpact",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDAreaofPrimaryImpact",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_RAIDImpactLevel",    "view" : true,  "edit" : true },' +
@@ -25,7 +25,8 @@ Ext.define("issue-request-form", {
                 '{ "Name" : "c_RAIDOwner",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateDue",    "view" : true,  "edit" : true },' +
                 '{ "Name" : "c_DateofNextReview",    "view" : true,  "edit" : true },' +
-                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true }' +
+                '{ "Name" : "c_WeeklyProgressUpdate",    "view" : true,  "edit" : true },' +
+                '{ "Name" : "Ready",    "view" : false,  "edit" : true }' +
                 ']}',
             approvalField: false,
             enableFormattedID: false,

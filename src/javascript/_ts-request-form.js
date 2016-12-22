@@ -2,7 +2,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.tsrequestform',
     logger: new Rally.technicalservices.Logger(),
-
+    bodyStyle: 'background:#cff; padding:10px;',
     layout: {
         type: 'vbox',       // Arrange child items vertically
         //type: 'table',
