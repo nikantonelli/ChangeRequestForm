@@ -1,5 +1,10 @@
 #Change Request Form
 
+RISK VARIANT
+
+Fixed field arrangement for Risks, Assumptions, Issues, Dependencies
+
+
 To make it easier for non-technical users to submit Change Requests to a centralised team.
 
 This app will provide a list of the users requests and allow them to enter new ones using a 

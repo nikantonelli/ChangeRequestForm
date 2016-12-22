@@ -18,7 +18,7 @@ Ext.define('Rally.technicalservices.RichTextEditor', {
 
         this.add({
             xtype: 'container',
-            html: Ext.String.format('<div class="tslabel">{0}</div>',field.name),
+            html: Ext.String.format('<div class="tslabel">{0}</div>',field.displayName),
             width: Rally.technicalservices.DetailEditorFactory.labelWidth,
             padding: 5
         });
