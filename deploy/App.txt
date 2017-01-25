@@ -3,11 +3,11 @@
 <head>
     <title>Issue Submit Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Dec 22 2016 16:26:54 GMT+0000 (GMT) -->
+    <!--  Build Date: Wed Jan 25 2017 17:49:47 GMT+0000 (GMT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Dec 22 2016 16:26:54 GMT+0000 (GMT)";
-        var CHECKSUM = 86961442313;
+        var APP_BUILD_DATE = "Wed Jan 25 2017 17:49:47 GMT+0000 (GMT)";
+        var CHECKSUM = 86966352688;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1654,7 +1654,7 @@ Ext.define("issue-request-form", {
                 onerror: this._onError,
                 ready: this._onReady
             }
-        }
+        });
 
         var btnText = 'Submit';
 
