@@ -3,11 +3,11 @@
 <head>
     <title>Assumption Submit Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Thu Dec 22 2016 16:35:30 GMT+0000 (GMT) -->
+    <!--  Build Date: Wed Jan 25 2017 17:39:38 GMT+0000 (GMT) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Thu Dec 22 2016 16:35:30 GMT+0000 (GMT)";
-        var CHECKSUM = 84667488405;
+        var APP_BUILD_DATE = "Wed Jan 25 2017 17:39:38 GMT+0000 (GMT)";
+        var CHECKSUM = 84681142242;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1731,7 +1731,7 @@ Ext.define("assumption-request-form", {
                     itemId: 'new_button',
                     items: [{
                         xtype: 'rallybutton',
-                        text: 'New Request',
+                        text: 'New Assumption',
                         margin: 5,
                         bubbleEvents: ['click']
                     }]
