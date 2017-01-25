@@ -73,8 +73,8 @@ Ext.define("issue-request-form", {
 
         this._clearWindow();
 
-        this.add({xtype:'container',itemId:'display_box', flex: 1});
         this.add({xtype:'container',itemId:'button_box', flex: 1, layout: {type: 'hbox', pack: 'center'}});
+        this.add({xtype:'container',itemId:'display_box', flex: 1});
 
         this.down('#display_box').add({
             xtype: 'tsrequestform',
@@ -92,9 +92,16 @@ Ext.define("issue-request-form", {
                 ready: this._onReady
             }
         });
+
+        var btnText = 'Submit';
+
+        if (record !== undefined) {
+            btnText = 'Update';
+        }
+
         this.down('#button_box').add({
             xtype:'rallybutton',
-            text: 'Submit',
+            text: btnText,
             itemId: 'btn-submit',
             style: {
                 textAlign: 'center'
@@ -173,7 +180,7 @@ Ext.define("issue-request-form", {
                     itemId: 'new_button',
                     items: [{
                         xtype: 'rallybutton',
-                        text: 'New Request',
+                        text: 'New Issue',
                         margin: 5,
                         bubbleEvents: ['click']
                     }]
