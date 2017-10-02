@@ -3,11 +3,11 @@
 <head>
     <title>Defect Submit Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Mon Oct 02 2017 14:09:18 GMT+0100 (BST) -->
+    <!--  Build Date: Mon Oct 02 2017 14:29:55 GMT+0100 (BST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Mon Oct 02 2017 14:09:18 GMT+0100 (BST)";
-        var CHECKSUM = 101149526141;
+        var APP_BUILD_DATE = "Mon Oct 02 2017 14:29:55 GMT+0100 (BST)";
+        var CHECKSUM = 101570171425;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1601,7 +1601,8 @@ Ext.define("defect-submit-form", {
         '{ "Name" : "c_BPSDatabaseReview",      "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Database Review"      },' +
         '{ "Name" : "c_BPSUsermanualupdatereqd","view" : true,   "edit" : true, "required" : true,                                   "altName" : "User Manual Update"   },' +
         '{ "Name" : "FoundInBuild",             "view" : true,   "edit" : true,                                                      "altName" : "Identified in Build#" },' +
-        '{ "Name" : "Environment",              "view" : true,   "edit" : true } ' +
+        '{ "Name" : "Environment",              "view" : true,   "edit" : true }, ' +
+        '{ "Name" : "Attachments",              "view" : false,  "edit" : true, "altName" : "Attachments:  possible on creation only" } ' +
         ']}',
     formModel: undefined,
     //TODO Need to load these from the subscription
@@ -1937,16 +1938,16 @@ Ext.define("defect-submit-form", {
                 labelAlign: 'top'
             },
             {
-                name: 'alwaysSubmit',
-                xtype: 'rallycheckboxfield',
-                fieldLabel: 'Always send to submit directory on save',
-                labelAlign: 'top'
+                name: 'submitDirectory',
+                xtype: 'rallyprojectpicker',
+                labelAlign: 'top',
+                fieldLabel: 'Target "submit (on ready)" project'
             },
             {
-            name: 'submitDirectory',
-            xtype: 'rallyprojectpicker',
-            labelAlign: 'top',
-            fieldLabel: 'Target "submit on ready" project'
+                name: 'alwaysSubmit',
+                xtype: 'rallycheckboxfield',
+                fieldLabel: 'Override "Ready" to "Always" (if target set)',
+                labelAlign: 'top'
             }
         ];
         return returned;

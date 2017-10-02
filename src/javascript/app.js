@@ -28,7 +28,8 @@ Ext.define("defect-submit-form", {
         '{ "Name" : "c_BPSDatabaseReview",      "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Database Review"      },' +
         '{ "Name" : "c_BPSUsermanualupdatereqd","view" : true,   "edit" : true, "required" : true,                                   "altName" : "User Manual Update"   },' +
         '{ "Name" : "FoundInBuild",             "view" : true,   "edit" : true,                                                      "altName" : "Identified in Build#" },' +
-        '{ "Name" : "Environment",              "view" : true,   "edit" : true } ' +
+        '{ "Name" : "Environment",              "view" : true,   "edit" : true }, ' +
+        '{ "Name" : "Attachments",              "view" : false,  "edit" : true } ' +
         ']}',
     formModel: undefined,
     //TODO Need to load these from the subscription
@@ -364,16 +365,16 @@ Ext.define("defect-submit-form", {
                 labelAlign: 'top'
             },
             {
-                name: 'alwaysSubmit',
-                xtype: 'rallycheckboxfield',
-                fieldLabel: 'Always send to submit directory on save',
-                labelAlign: 'top'
+                name: 'submitDirectory',
+                xtype: 'rallyprojectpicker',
+                labelAlign: 'top',
+                fieldLabel: 'Target "submit (on ready)" project'
             },
             {
-            name: 'submitDirectory',
-            xtype: 'rallyprojectpicker',
-            labelAlign: 'top',
-            fieldLabel: 'Target "submit on ready" project'
+                name: 'alwaysSubmit',
+                xtype: 'rallycheckboxfield',
+                fieldLabel: 'Override "Ready" to "Always" (if target set)',
+                labelAlign: 'top'
             }
         ];
         return returned;
