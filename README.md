@@ -1,4 +1,4 @@
-#Defect Submision Form
+#Defect Submission Form
 
 This app will provide a list of the defects and allow them to enter new ones using a 
 predefined form layout. Usually the user does not need to see or be able to modify all the
