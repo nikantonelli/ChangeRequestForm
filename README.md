@@ -1,29 +1,33 @@
-#Change Request Form
+#Defect Submision Form
 
-RISK VARIANT
-
-Fixed field arrangement for Risks, Assumptions, Issues, Dependencies
-
-
-To make it easier for non-technical users to submit Change Requests to a centralised team.
-
-This app will provide a list of the users requests and allow them to enter new ones using a 
+This app will provide a list of the defects and allow them to enter new ones using a 
 predefined form layout. Usually the user does not need to see or be able to modify all the
-fields that are held for an artifact, so the App Settings allow the project admin to set up
-a set of fields to view and edit.
+fields that are held for an artifact. To make deployment simple, the project admin will need to set up
+a set of fields to view and edit (within the source code). There is a self-explanatory table in the code 
+called "layoutConfig" that can be set to requirements
 
-The app controls the created artifact in two ways:
+The app controls the created defect in one of two ways:
 
-1. It leaves in in the current project node until moved by the intended recipient. The 
-   advantage of this is that you can create a sub node to the current node that the recipient 
-   also has read/write access, but general users have read only. In this way the user can still 
-   see all the artefacts, but now ownership/control is passed to the recipient
-   
+1. It leaves it in the creator's current project node until you have entered all the fields as you have 
+   discovered the info. The advantage of this is that you can fiddle about with a defect artefact in your 
+   own local space and then when you are sure that it is acceptable to the relevant team/dept, you can 
+   move it into their node with a simple update.
+
+OR
+
 2. It moves it to a target directory that could be somewhere completely different. This would 
-   make it appear as if the change request had 'disappeared' into someone elses inbox
-   
-Using the project hierarchy in a clever way could result in the user being able to see the stage
-of deliberation of the request. For example, if you make sub-nodes called "Under Consideration", 
-"Accepted" and "Rejected", the user could get feedback as to what the recipient is doing with 
-the request. At the same time, the artefact could have it's usual "State" field or a custom field 
-defining another workflow that the recipient uses, but doesn't want visible to the user
+   make it appear as if the defect had 'disappeared' into someone elses inbox
+
+You can use the "Ready" field to indicate that the defect has just been moved into the target location. 
+This can act as a flag to the recipients that it is "new" and requires action.
+
+The layoutConfig table can enable a couple of extra features:
+
+1. Even though the Agile Central may be set that the field is not mandatory, by setting a 'required' 
+   flag in the layoutConfig table, the app will not create the entry unless all those fields are set to 
+   something apart from 'blank' (Mandatory fields are not really that helpful, try not to use them if at 
+   all possible).
+2. The field name can be "translated" to something more meaningful in the entry form by adding an "altName" field
+
+In the App settings, you can also override the use of the ready field so that it _always_ moves the defect to the target directory
+if it has been set.
