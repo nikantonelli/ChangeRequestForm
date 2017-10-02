@@ -13,7 +13,7 @@ Ext.define("defect-submit-form", {
     layoutConfig: '{"fields" : [' +
 //        '{ "Name" : "Project",    "view" : true,  "edit" : false },' +
 //        '{ "Name" : "Parent",    "view" : true,  "edit" : false },' +
-        '{ "Name" : "Ready",                    "view" : false,  "edit" : true                   , "defaultValue" : false,           "altName" : "Ready to Submit"      },' +
+        '{ "Name" : "Ready",                    "view" : false,  "edit" : true                   , "defaultValue" : false,           "altName" : "Ready to Submit to Dev"      },' +
         '{ "Name" : "c_BPSProductComponent",    "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Product/Component"    },' +
         '{ "Name" : "Name",                     "view" : true,   "edit" : true, "required" : true },' +
         '{ "Name" : "Description",              "view" : false,  "edit" : true, "required" : true },' +
@@ -116,7 +116,7 @@ Ext.define("defect-submit-form", {
     _save: function(){
         var requestForm = this.down('#requestform');
 //        if (requestForm.validate()) {
-            requestForm.save();
+            requestForm.save(this.getSetting('alwaysSubmit'));
 //        } else {
 //            Rally.ui.notify.Notifier.showError({message: 'Check data entry before submission'});
 //        }
@@ -157,6 +157,7 @@ Ext.define("defect-submit-form", {
     },
     _checkSubmit: function(store,record,action,field) {
         //Don't need:  && (record.get('Ready') !== record.raw.Ready)
+        debugger;
         if (field.includes('Ready') && (action === 'edit') && (record.raw.Ready !== false)) {
             if ( this.submitDirectory ) {
                 record.set('Project', this.submitDirectory);
@@ -356,18 +357,25 @@ Ext.define("defect-submit-form", {
     },
     getSettingsFields: function() {
         var returned = [
-        {
-            name: 'enableFormattedID',
-            xtype: 'rallycheckboxfield',
-            fieldLabel: 'Show ID as hyperlink',
-            labelAlign: 'top'
-        },
-        {
+            {
+                name: 'enableFormattedID',
+                xtype: 'rallycheckboxfield',
+                fieldLabel: 'Show ID as hyperlink',
+                labelAlign: 'top'
+            },
+            {
+                name: 'alwaysSubmit',
+                xtype: 'rallycheckboxfield',
+                fieldLabel: 'Always send to submit directory on save',
+                labelAlign: 'top'
+            },
+            {
             name: 'submitDirectory',
             xtype: 'rallyprojectpicker',
             labelAlign: 'top',
             fieldLabel: 'Target "submit on ready" project'
-        }];
+            }
+        ];
         return returned;
     },
     _launchInfo: function() {

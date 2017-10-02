@@ -66,7 +66,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
                 if (model_field && field_obj.edit){
                     var item_id = field_name,
                         margin = 10,
-                        field_label = model_field.displayName;
+                        field_label = field_obj.altName? field_obj.altName:model_field.displayName;
 
                     var item = Rally.technicalservices.DetailEditorFactory.getEditor(model_field,record,item_id, margin, field_label);
                     item.labelCls = "tslabel";
@@ -112,14 +112,14 @@ Ext.define('Rally.technicalservices.RequestForm', {
         newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
 
         //Add submit directory here
-        newFields['Project'] = this.submitDirectory
+//        newFields['Project'] = this.submitDirectory
 
         //this.logger.log('_getNewRecord', newFields);
         var rec = Ext.create(model, newFields);
         return rec;
     },
 
-    _updateRecord: function(){
+    _updateRecord: function(forceSubmit){
         var exceptionFields = ["Attachments"],
             valid = true;
         _.each(this.formConfiguration, function(field_obj){
@@ -144,15 +144,15 @@ Ext.define('Rally.technicalservices.RequestForm', {
             }
         }, this);
 
-        if (this.record.get('Ready') && this.submitDirectory){
+        if ((this.record.get('Ready') || forceSubmit) && this.submitDirectory){
             this.record.set('Project', this.submitDirectory);
         }
 //this.logger.log('newRecordsetTo', this.newRecord);
         return valid;
     },
 
-    save: function () {
-        if (!this._updateRecord()){
+    save: function (forceSubmit) {
+        if (!this._updateRecord(forceSubmit)){
             return false;
         };
         var attachments = null;

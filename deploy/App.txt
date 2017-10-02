@@ -3,11 +3,11 @@
 <head>
     <title>Defect Submit Form</title>
     <!--  (c) 2015 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Mon Oct 02 2017 13:48:16 GMT+0100 (BST) -->
+    <!--  Build Date: Mon Oct 02 2017 14:09:18 GMT+0100 (BST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Mon Oct 02 2017 13:48:16 GMT+0100 (BST)";
-        var CHECKSUM = 100056804935;
+        var APP_BUILD_DATE = "Mon Oct 02 2017 14:09:18 GMT+0100 (BST)";
+        var CHECKSUM = 101149526141;
     </script>
     
     <script type="text/javascript" src="/apps/2.1/sdk-debug.js"></script>
@@ -1361,7 +1361,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
                 if (model_field && field_obj.edit){
                     var item_id = field_name,
                         margin = 10,
-                        field_label = model_field.displayName;
+                        field_label = field_obj.altName? field_obj.altName:model_field.displayName;
 
                     var item = Rally.technicalservices.DetailEditorFactory.getEditor(model_field,record,item_id, margin, field_label);
                     item.labelCls = "tslabel";
@@ -1407,14 +1407,14 @@ Ext.define('Rally.technicalservices.RequestForm', {
         newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
 
         //Add submit directory here
-        newFields['Project'] = this.submitDirectory
+//        newFields['Project'] = this.submitDirectory
 
         //this.logger.log('_getNewRecord', newFields);
         var rec = Ext.create(model, newFields);
         return rec;
     },
 
-    _updateRecord: function(){
+    _updateRecord: function(forceSubmit){
         var exceptionFields = ["Attachments"],
             valid = true;
         _.each(this.formConfiguration, function(field_obj){
@@ -1439,15 +1439,15 @@ Ext.define('Rally.technicalservices.RequestForm', {
             }
         }, this);
 
-        if (this.record.get('Ready') && this.submitDirectory){
+        if ((this.record.get('Ready') || forceSubmit) && this.submitDirectory){
             this.record.set('Project', this.submitDirectory);
         }
 //this.logger.log('newRecordsetTo', this.newRecord);
         return valid;
     },
 
-    save: function () {
-        if (!this._updateRecord()){
+    save: function (forceSubmit) {
+        if (!this._updateRecord(forceSubmit)){
             return false;
         };
         var attachments = null;
@@ -1586,7 +1586,7 @@ Ext.define("defect-submit-form", {
     layoutConfig: '{"fields" : [' +
 //        '{ "Name" : "Project",    "view" : true,  "edit" : false },' +
 //        '{ "Name" : "Parent",    "view" : true,  "edit" : false },' +
-        '{ "Name" : "Ready",                    "view" : false,  "edit" : true                   , "defaultValue" : false,           "altName" : "Ready to Submit"      },' +
+        '{ "Name" : "Ready",                    "view" : false,  "edit" : true                   , "defaultValue" : false,           "altName" : "Ready to Submit to Dev"      },' +
         '{ "Name" : "c_BPSProductComponent",    "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Product/Component"    },' +
         '{ "Name" : "Name",                     "view" : true,   "edit" : true, "required" : true },' +
         '{ "Name" : "Description",              "view" : false,  "edit" : true, "required" : true },' +
@@ -1689,7 +1689,7 @@ Ext.define("defect-submit-form", {
     _save: function(){
         var requestForm = this.down('#requestform');
 //        if (requestForm.validate()) {
-            requestForm.save();
+            requestForm.save(this.getSetting('alwaysSubmit'));
 //        } else {
 //            Rally.ui.notify.Notifier.showError({message: 'Check data entry before submission'});
 //        }
@@ -1730,6 +1730,7 @@ Ext.define("defect-submit-form", {
     },
     _checkSubmit: function(store,record,action,field) {
         //Don't need:  && (record.get('Ready') !== record.raw.Ready)
+        debugger;
         if (field.includes('Ready') && (action === 'edit') && (record.raw.Ready !== false)) {
             if ( this.submitDirectory ) {
                 record.set('Project', this.submitDirectory);
@@ -1929,18 +1930,25 @@ Ext.define("defect-submit-form", {
     },
     getSettingsFields: function() {
         var returned = [
-        {
-            name: 'enableFormattedID',
-            xtype: 'rallycheckboxfield',
-            fieldLabel: 'Show ID as hyperlink',
-            labelAlign: 'top'
-        },
-        {
+            {
+                name: 'enableFormattedID',
+                xtype: 'rallycheckboxfield',
+                fieldLabel: 'Show ID as hyperlink',
+                labelAlign: 'top'
+            },
+            {
+                name: 'alwaysSubmit',
+                xtype: 'rallycheckboxfield',
+                fieldLabel: 'Always send to submit directory on save',
+                labelAlign: 'top'
+            },
+            {
             name: 'submitDirectory',
             xtype: 'rallyprojectpicker',
             labelAlign: 'top',
             fieldLabel: 'Target "submit on ready" project'
-        }];
+            }
+        ];
         return returned;
     },
     _launchInfo: function() {
