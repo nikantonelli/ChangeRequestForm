@@ -126,9 +126,16 @@ Ext.define('Rally.technicalservices.RequestForm', {
             var field_name = field_obj.Name;
             if (!Ext.Array.contains(exceptionFields, field_name) && field_obj.edit) {
                 //this.logger.log('_updateNewRecord', field_name, this.down('#' + field_name));
-
                 var val = this.down('#' + field_name).getValue() || field_obj.defaultValue || null;
+
                 valid = this.down('#' + field_name).validate();
+                if (!val && field_obj.required) {
+                    var msg = Ext.String.format("Required field missing: {0}", field_obj.altName? field_obj.altName:field_name);
+                    this.fireEvent('onerror', {message: msg});
+
+                    valid = false;
+                    return false;
+                }
                 if (!valid) {
                     return false;
                 }
@@ -143,6 +150,7 @@ Ext.define('Rally.technicalservices.RequestForm', {
 //this.logger.log('newRecordsetTo', this.newRecord);
         return valid;
     },
+
     save: function () {
         if (!this._updateRecord()){
             return false;

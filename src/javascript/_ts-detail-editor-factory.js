@@ -114,6 +114,7 @@
             minWidth: 200,
             editable: false,
             allowNoEntry: defaultAllowNoEntry(field, record),
+            noEntryText: '',
             useNullForNoEntryValue: true,
             plugins: [
                 {
@@ -378,7 +379,8 @@
                             model: field.attributeDefinition.SchemaType,
                             initialValue: record.get(field.name) ? record.get(field.name)._refObjectName : ''
                         },
-                        allowNoEntry: defaultAllowNoEntry(field, record)
+                        allowNoEntry: defaultAllowNoEntry(field, record),
+                        noEntryText: '',
                     });
 
                 } else {
