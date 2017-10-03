@@ -7,26 +7,27 @@ Ext.define("defect-submit-form", {
         defaultSettings: {
             approvalField: false,
             enableFormattedID: false,
-            submitDirectory: ''
+            submitDirectory: '',
+            alwaysSubmit: true
         }
     },
     layoutConfig: '{"fields" : [' +
 //        '{ "Name" : "Project",    "view" : true,  "edit" : false },' +
 //        '{ "Name" : "Parent",    "view" : true,  "edit" : false },' +
-        '{ "Name" : "Ready",                    "view" : false,  "edit" : true                   , "defaultValue" : false,           "altName" : "Ready to Submit to Dev"      },' +
+//        '{ "Name" : "Ready",                    "view" : false,  "edit" : true                   , "defaultValue" : false,           "altName" : "Ready to Submit to Dev"      },' +
         '{ "Name" : "c_BPSProductComponent",    "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Product/Component"    },' +
         '{ "Name" : "Name",                     "view" : true,   "edit" : true, "required" : true },' +
         '{ "Name" : "Description",              "view" : false,  "edit" : true, "required" : true },' +
-        '{ "Name" : "Priority",                 "view" : true,   "edit" : true, "required" : true, "defaultValue" : "Normal"         },' +
-        '{ "Name" : "Severity",                 "view" : true,   "edit" : true,                    "defaultValue" : "Minor Problem"  },' +
-        '{ "Name" : "State",                    "view" : true,   "edit" : true,                    "defaultValue" : "Submitted"      },' +
-        '{ "Name" : "ScheduleState",            "view" : true,   "edit" : true,                    "defaultValue" : "Backlog"        },' +
-        '{ "Name" : "SubmittedBy",              "view" : true,   "edit" : true },' +
+        '{ "Name" : "Priority",                 "view" : true,   "edit" : true, "required" : true, "defaultValue" : "Normal"        },' +
+        '{ "Name" : "Severity",                 "view" : true,   "edit" : true,                    "defaultValue" : "Minor Problem" },' +
+        '{ "Name" : "State",                    "view" : true,   "edit" : true,                    "defaultValue" : "Submitted"     },' +
+        '{ "Name" : "ScheduleState",            "view" : true,   "edit" : true,                    "defaultValue" : "Backlog"       },' +
+        '{ "Name" : "SubmittedBy",              "view" : true,   "edit" : false },' +
         '{ "Name" : "Owner",                    "view" : true,   "edit" : false},' +
-        '{ "Name" : "c_BPSCodeReview",          "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Code Review"          },' +
-        '{ "Name" : "c_BPSSecurityCodeReview",  "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Security Review"      },' +
-        '{ "Name" : "c_BPSDatabaseReview",      "view" : true,   "edit" : true, "required" : true,                                   "altName" : "Database Review"      },' +
-        '{ "Name" : "c_BPSUsermanualupdatereqd","view" : true,   "edit" : true, "required" : true,                                   "altName" : "User Manual Update"   },' +
+        '{ "Name" : "c_BPSCodeReview",          "view" : true,   "edit" : false, "required" : true, "defaultValue" : "Required",      "altName" : "Code Review"          },' +
+        '{ "Name" : "c_BPSSecurityCodeReview",  "view" : true,   "edit" : false, "required" : true, "defaultValue" : "Required",      "altName" : "Security Review"      },' +
+        '{ "Name" : "c_BPSDatabaseReview",      "view" : true,   "edit" : false, "required" : true, "defaultValue" : "Required",      "altName" : "Database Review"      },' +
+        '{ "Name" : "c_BPSUsermanualupdatereqd","view" : true,   "edit" : false, "required" : true, "defaultValue" : "Required",      "altName" : "User Manual Update"   },' +
         '{ "Name" : "FoundInBuild",             "view" : true,   "edit" : true,                                                      "altName" : "Identified in Build#" },' +
         '{ "Name" : "Environment",              "view" : true,   "edit" : true }, ' +
         '{ "Name" : "Attachments",              "view" : false,  "edit" : true } ' +

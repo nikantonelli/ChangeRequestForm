@@ -104,12 +104,17 @@ Ext.define('Rally.technicalservices.RequestForm', {
         Ext.Object.each(this.formConfiguration, function(field_name, field_obj){
             //this.logger.log('_getNewRecord',field_name, field_obj);
             if (field_obj.defaultValue){
-                newFields[field_name]=field_obj.defaultValue;
+                newFields[field_obj.Name]=field_obj.defaultValue;
             }
         },this);
 
         //Add the users name in here
         newFields['Owner'] = Rally.getApp().getContext().getUser()._ref;
+
+        //If this is a defect we are making, we need to set the submitter.
+        if (model.getField("SubmittedBy")) {
+            newFields['SubmittedBy'] = Rally.getApp().getContext().getUser()._ref;
+        }
 
         //Add submit directory here
 //        newFields['Project'] = this.submitDirectory
